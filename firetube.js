@@ -10,11 +10,11 @@ commentsRef.onAuth(function(authData) {
   }
 });
 
-//Create a query for only the last 10 comments
-var last10Comments = commentsRef.limit(10);
+//Create a query for only the last 4 comments
+var last4Comments = commentsRef.limit(4);
 
 //Render Comments
-last10Comments.on('child_added', function (snapshot) {
+last4Comments.on('child_added', function (snapshot) {
   var comment = snapshot.val();
   var newDiv = $("<div/>").addClass("comment").attr("id",snapshot.name()).appendTo("#comments");
   FB.api("/" + comment.userid, function(userdata) {
