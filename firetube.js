@@ -37,7 +37,7 @@ function onCommentKeyDown(event) {
 }
 
 //Remove deleted comments
-last10Comments.on("child_removed", function(snapshot) {
+last4Comments.on("child_removed", function(snapshot) {
   $("#" + snapshot.name()).remove();
 });
 
