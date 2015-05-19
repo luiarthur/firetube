@@ -1,26 +1,29 @@
-//var commentsRef = new Firebase('https://firetube.firebaseio.com/comments');
-var commentsRef = new Firebase('https://luiarthur-comments.firebaseio.com/comments');
+//var ref = new Firebase('https://firetube.firebaseio.com/comments');
+var ref = new Firebase('https://luiarthur-comments.firebaseio.com/comments');
 var myUserID = null;
+var myName = null;
 
 //Create an Firebase Simple Login client so we can do Facebook auth
-commentsRef.onAuth(function(authData) {
+ref.onAuth(function(authData) {
   if (authData) {
+    console.log(authData.facebook.id);
     myUserID = authData.facebook.id;
+    myName = authData.facebook.displayName;
     $("#loginDiv").text(authData.facebook.displayName);
+    var src = "https://graph.facebook.com/"+myUserID+"/picture";
+    $("#uimg").attr("src",src);
   }
 });
 
 //Create a query for only the last 4 comments
-var last4Comments = commentsRef.limit(4);
+var last4Comments = ref.limit(4);
 
 //Render Comments
 last4Comments.on('child_added', function (snapshot) {
   var comment = snapshot.val();
   var newDiv = $("<div/>").addClass("comment").attr("id",snapshot.name()).appendTo("#comments");
-  FB.api("/" + comment.userid, function(userdata) {
-    comment.name = userdata.name;
-    newDiv.html(Mustache.to_html($('#template').html(), comment));
-  });
+  console.log(comment);
+  newDiv.html(Mustache.to_html($('#template').html(), comment));
 });
 
 //Add New Comments
@@ -29,7 +32,7 @@ function onCommentKeyDown(event) {
     if(myUserID == null) {
       alert("You must log in to leave a comment");
     } else {
-      commentsRef.push({userid: myUserID, body: $("#text").val()})
+      ref.push({userid: myUserID, name: myName, body: $("#text").val()});
       $("#text").val("");
     }
     event.preventDefault();
@@ -43,5 +46,5 @@ last4Comments.on("child_removed", function(snapshot) {
 
 //Handle Login
 function onLoginButtonClicked() {
-  commentsRef.authWithOAuthPopup('facebook', function(){});
+  ref.authWithOAuthPopup('facebook', function(){});
 }
